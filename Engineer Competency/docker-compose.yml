@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: engineer-comp-web
+    ports:
+      - "8100:8100"
+    env_file:
+      - .env.docker
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: engineer-comp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: internal_auth_service_user
+      POSTGRES_PASSWORD: internal_auth_service_password
+      POSTGRES_DB: internal_auth_service
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

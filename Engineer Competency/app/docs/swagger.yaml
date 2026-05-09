@@ -1,0 +1,473 @@
+basePath: /
+definitions:
+  model.Response:
+    properties:
+      data: {}
+      error: {}
+      errors: {}
+      message:
+        type: string
+      messages:
+        items:
+          type: string
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      status_code:
+        type: integer
+      total:
+        type: integer
+    type: object
+  models.InvoiceRequest:
+    properties:
+      admin_id:
+        type: integer
+      amount:
+        type: number
+      buyer_id:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      invoice_id:
+        type: integer
+      invoice_name:
+        type: string
+      merchant_id:
+        type: integer
+      payment_type:
+        type: string
+      role_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      va_wallet:
+        type: number
+    type: object
+  models.Request:
+    properties:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      code:
+        type: string
+      password:
+        type: string
+      redirect_uri:
+        type: string
+      user_token:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Wallet:
+    properties:
+      action:
+        type: string
+      created_at:
+        type: string
+      current_saldo:
+        type: number
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      invoice_id:
+        type: integer
+      record_saldo:
+        type: number
+      status:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Gateway Internal Auth Service dengan OAuth, wallet, dan invoice.
+  title: Engineer Competency API
+  version: "1.0"
+paths:
+  /api/v1/invoice/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get invoice details by invoice ID
+      parameters:
+      - description: Invoice ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Get invoice by ID
+      tags:
+      - Invoice
+  /api/v1/invoice/all:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all invoices
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Get all invoices
+      tags:
+      - Invoice
+  /api/v1/invoice/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new invoice for a merchant
+      parameters:
+      - description: Invoice create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.InvoiceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Create invoice
+      tags:
+      - Invoice
+  /api/v1/invoice/update-status:
+    put:
+      consumes:
+      - application/json
+      description: Update invoice fields such as status and payment type
+      parameters:
+      - description: Invoice update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.InvoiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Update invoice status
+      tags:
+      - Invoice
+  /api/v1/oauth/token:
+    post:
+      consumes:
+      - application/json
+      description: Generate OAuth access token using client credentials and password
+      parameters:
+      - description: OAuth token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BasicAuth: []
+      summary: Generate OAuth token
+      tags:
+      - OAuth
+  /api/v1/oauth/verify-login-token:
+    post:
+      consumes:
+      - application/json
+      description: Verify and validate an existing login token
+      parameters:
+      - description: Login token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BasicAuth: []
+      summary: Verify login token
+      tags:
+      - OAuth
+  /api/v1/wallet/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get wallet details by wallet ID
+      parameters:
+      - description: Wallet ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Get wallet by ID
+      tags:
+      - Wallet
+  /api/v1/wallet/balance/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get balance for a user wallet by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Get wallet balance by user ID
+      tags:
+      - Wallet
+  /api/v1/wallet/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new wallet for a user
+      parameters:
+      - description: Wallet request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Wallet'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Create wallet
+      tags:
+      - Wallet
+  /api/v1/wallet/top-up:
+    post:
+      consumes:
+      - application/json
+      description: Add balance to a wallet
+      parameters:
+      - description: Top up request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Wallet'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Top up wallet balance
+      tags:
+      - Wallet
+  /api/v1/wallet/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get wallet list by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerAuth: []
+      summary: Get wallet by user ID
+      tags:
+      - Wallet
+schemes:
+- http
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
